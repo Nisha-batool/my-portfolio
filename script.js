@@ -4,16 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // === 1. LOADING SCREEN ===
-    const loader = document.getElementById('loader');
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (loader) loader.classList.add('hidden');
-            document.querySelector('.hero-content')?.classList.add('visible');
-        }, 1200); 
-    });
-
-    // === 2. SCROLL PROGRESS & STICKY NAV ===
+    // === 1. SCROLL PROGRESS & STICKY NAV ===
     const scrollProgress = document.getElementById('scroll-progress');
     const navbar = document.getElementById('navbar');
     const backToTop = document.getElementById('back-to-top');
@@ -50,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // === 3. MOBILE MENU ===
+    // === 2. MOBILE MENU ===
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('nav-links');
     const mobileOverlay = document.getElementById('mobile-overlay');
@@ -69,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(navLinks.classList.contains('open')) toggleMenu();
     }));
 
-    // === 4. TYPING ANIMATION ===
+    // === 3. TYPING ANIMATION ===
     const typedTextSpan = document.getElementById('typed-text');
     const textArray = ["Front-End Developer", "React.js Developer", "Web Interface Designer"];
     let textIdx = 0;
@@ -85,9 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (charIdx < textArray[textIdx].length) {
             typedTextSpan.textContent += textArray[textIdx][charIdx];
             charIdx++;
-            setTimeout(type, 100);
+            setTimeout(type, 55);
         } else {
-            setTimeout(erase, 2000);
+            setTimeout(erase, 1200);
         }
     }
 
@@ -95,10 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (charIdx > 0) {
             typedTextSpan.textContent = textArray[textIdx].substring(0, charIdx - 1);
             charIdx--;
-            setTimeout(erase, 50);
+            setTimeout(erase, 25);
         } else {
             textIdx = (textIdx + 1) % textArray.length;
-            setTimeout(type, 500);
+            setTimeout(type, 300);
         }
     }
 
@@ -107,11 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
             typedTextSpan.textContent = textArray[0];
         } else {
             typedTextSpan.textContent = '';
-            setTimeout(type, 1000);
+            setTimeout(type, 400);
         }
     }
 
-    // === 5. PROJECT MODAL LOGIC ===
+    // === 4. PROJECT MODAL LOGIC ===
     const modal = document.getElementById('project-modal');
     const modalBody = document.getElementById('modal-body');
     const closeBtn = document.querySelector('.modal-close');
@@ -199,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `mailto:nishabatool@gmail.com?subject=${subject}&body=${body}`;
     });
 
-    // === 6. SCROLL REVEAL ===
+    // === 5. SCROLL REVEAL ===
     const revealGroups = [
         '.section-header',
         '.about-card',
@@ -214,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     revealGroups.forEach(selector => {
         document.querySelectorAll(selector).forEach((el, index) => {
             el.classList.add('reveal');
-            el.style.setProperty('--reveal-delay', `${Math.min(index * 0.08, 0.4)}s`);
+            el.style.setProperty('--reveal-delay', `${Math.min(index * 0.04, 0.2)}s`);
             el.style.setProperty('--reveal-x', index % 2 === 0 ? '-56px' : '56px');
         });
     });
@@ -234,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-    // === 7. PARTICLE BACKGROUND ===
+    // === 6. PARTICLE BACKGROUND ===
     const canvas = document.getElementById('particle-canvas');
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const isSmallScreen = window.matchMedia('(max-width: 768px)').matches;
@@ -242,11 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
         let particles = [];
         let animationId = null;
+        let heroIsVisible = false;
+        let lastFrameTime = 0;
+        const frameInterval = 1000 / 30;
         const init = () => {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             particles = [];
-            for (let i = 0; i < 28; i++) {
+            for (let i = 0; i < 20; i++) {
                 particles.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -256,24 +250,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         };
-        const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#00c27a33";
-            particles.forEach(p => {
-                p.x += p.vx; p.y += p.vy;
-                if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                ctx.beginPath();
-                ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
-                ctx.fill();
-            });
+        const animate = timestamp => {
+            animationId = null;
+            if (!heroIsVisible || document.hidden) return;
+            if (timestamp - lastFrameTime >= frameInterval) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#00c27a33";
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+                lastFrameTime = timestamp;
+            }
             animationId = requestAnimationFrame(animate);
         };
-        init(); animate();
+        const updateAnimation = () => {
+            if (heroIsVisible && !document.hidden && animationId === null) {
+                animationId = requestAnimationFrame(animate);
+            } else if ((!heroIsVisible || document.hidden) && animationId !== null) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        };
+        const heroObserver = new IntersectionObserver(([entry]) => {
+            heroIsVisible = entry.isIntersecting;
+            updateAnimation();
+        });
+        init();
+        heroObserver.observe(canvas.closest('.hero') || canvas);
+        document.addEventListener('visibilitychange', updateAnimation);
         window.addEventListener('resize', () => {
-            if (animationId) cancelAnimationFrame(animationId);
             init();
-            animate();
+            lastFrameTime = 0;
         }, { passive: true });
     } else if (canvas) {
         canvas.remove();

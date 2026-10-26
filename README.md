@@ -6,13 +6,13 @@ A responsive portfolio website for Nisha Batool, a front-end developer based in 
 
 - Profile-style hero, about, skills, projects, certificates, contact, and footer sections
 - Responsive navigation and layouts
-- Dark purple theme with scroll and entrance animations
+- Dark purple theme with responsive, reduced-cost animations that pause when out of view
 - Project demo links and certificate credential details
 - Contact links and an email-compose form
 - Nisha's profile photo in `images/Nisha-Batool-Profile.jpg`
 - CV preview in the portfolio and downloadable PDF at `My CV.pdf`, made from the latest provided resume
 - Four updated certificate images, each in its own folder under `images/certificates/`
-- Original CV image in `images/Nisha-Batool-CV.png`
+- Updated CV image in `images/Nisha-Batool-CV.png`
 
 ## Technology
 
